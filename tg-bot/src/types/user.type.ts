@@ -25,7 +25,9 @@ export type User = {
   telegram_id: number;
   created_at: Date;
   updated_at: Date;
-  follower_ids: []
+  meta: {
+    follower_ids: [],
+  };
 };
 
 export type UserDto = Pick<User, 'telegram_id' | 'name'>;

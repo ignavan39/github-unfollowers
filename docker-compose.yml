@@ -103,12 +103,10 @@ services:
 
   gh-actions-api:
     environment: 
-      NODE_ENV: production
       DATABASE_USER: ${DATABASE_USER:-user}
       DATABASE_NAME: ${DATABASE_NAME:-gh_actions_db}
       DATABASE_PASS: ${DATABASE_PASS:-user}
       DATABASE_PORT: ${DATABASE_PORT:-5432}
-      BOT_TOKEN: ${BOT_TOKEN}
       DATABASE_HOST: ${DATABASE_HOST:-postgres_gh_actions}
       RABBIT_HOST: ${RABBIT_HOST:-rabbitmq_gh_actions}
       RABBIT_PORT: ${RABBIT_PORT:-5672}

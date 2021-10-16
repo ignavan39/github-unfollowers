@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
     telegram_id INT NOT NULL,
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    follower_ids jsonb NOT NULL DEFAULT '{[]}',
-    CONSTRAINT primary_key_user PRIMARY KEY ( id ),
+    meta jsonb NOT NULL DEFAULT '{"follower_ids":[]}',
+    CONSTRAINT primary_key_user PRIMARY KEY ( id )
 );
 CREATE UNIQUE INDEX "user.telegram_id_unique" ON "users"("telegram_id");
 
