@@ -1,0 +1,135 @@
+version: '3.9'
+volumes:
+  postgres_data:
+  pgadmin:
+  rabbitmq_data:
+
+services:
+  rabbitmq:
+    container_name: rabbitmq_gh_actions
+    image: rabbitmq:3-management-alpine
+    volumes:
+      - 'rabbitmq_data:/data'
+    ports: 
+      - '5672:5672'
+      - '15672:15672'
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    container_name: postgres_gh_actions
+    image: postgres:11.13-alpine
+    command:
+      - 'postgres'
+      - '-c'
+      - 'max_connections=50'
+      - '-c'
+      - 'shared_buffers=1GB'
+      - '-c'
+      - 'effective_cache_size=4GB'
+      - '-c'
+      - 'work_mem=16MB'
+      - '-c'
+      - 'maintenance_work_mem=512MB'
+      - '-c'
+      - 'random_page_cost=1.1'
+      - '-c'
+      - 'temp_file_limit=10GB'
+      - '-c'
+      - 'log_min_duration_statement=200ms'
+      - '-c'
+      - 'idle_in_transaction_session_timeout=10s'
+      - '-c'
+      - 'lock_timeout=1s'
+      - '-c'
+      - 'statement_timeout=60s'
+      - '-c'
+      - 'shared_preload_libraries=pg_stat_statements'
+      - '-c'
+      - 'pg_stat_statements.max=10000'
+      - '-c'
+      - 'pg_stat_statements.track=all'
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-gh_actions_db}
+      POSTGRES_USER: ${DATABASE_USER:-user}
+      POSTGRES_PASSWORD: ${DATABASE_PASS:-user}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DATABASE_USER:-user} -d ${DATABASE_NAME:-gh_actions_db}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+
+  gh-actions-bot:
+    environment: 
+      NODE_ENV: production
+      DATABASE_USER: ${DATABASE_USER:-user}
+      DATABASE_NAME: ${DATABASE_NAME:-gh_actions_db}
+      DATABASE_PASS: ${DATABASE_PASS:-user}
+      DATABASE_PORT: ${DATABASE_PORT:-5432}
+      BOT_TOKEN: ${BOT_TOKEN}
+      DATABASE_HOST: ${DATABASE_HOST:-postgres_gh_actions}
+      RABBIT_HOST: ${RABBIT_HOST:-rabbitmq_gh_actions}
+      RABBIT_PORT: ${RABBIT_PORT:-5672}
+    container_name: gh_actions_tg_bot
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    links:
+      - rabbitmq
+      - postgres
+    build: 
+      context: ./tg-bot
+      dockerfile: ./Dockerfile
+    ports:
+     - 80:8080
+    networks:
+      - default
+    command: yarn start:prod
+
+  gh-actions-api:
+    environment: 
+      NODE_ENV: production
+      DATABASE_USER: ${DATABASE_USER:-user}
+      DATABASE_NAME: ${DATABASE_NAME:-gh_actions_db}
+      DATABASE_PASS: ${DATABASE_PASS:-user}
+      DATABASE_PORT: ${DATABASE_PORT:-5432}
+      BOT_TOKEN: ${BOT_TOKEN}
+      DATABASE_HOST: ${DATABASE_HOST:-postgres_gh_actions}
+      RABBIT_HOST: ${RABBIT_HOST:-rabbitmq_gh_actions}
+      RABBIT_PORT: ${RABBIT_PORT:-5672}
+    container_name: gh_actions_api
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    links:
+      - rabbitmq
+      - postgres
+    build: 
+      context: ./gh-actions
+      dockerfile: ./Dockerfile
+    ports:
+     - 3000:3000
+    networks:
+      - default
+
+networks: 
+  default:
+    name: gh-actions-
+    driver: bridge

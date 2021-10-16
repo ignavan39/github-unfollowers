@@ -1,0 +1,6 @@
+.env
+/pgdata
+./deploy.conf
+/node_modules
+/tg-bot/node_modules
+/tg-bot/dist
