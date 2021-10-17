@@ -23,6 +23,7 @@ export type User = {
   id: string;
   name?: string | null;
   telegram_id: number;
+  github_username: string;
   created_at: Date;
   updated_at: Date;
   meta: {
