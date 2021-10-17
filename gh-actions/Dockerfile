@@ -9,6 +9,4 @@ RUN go mod download
 
 RUN go build -o /build
 
-EXPOSE 8080
-
 CMD [ "/build" ]
