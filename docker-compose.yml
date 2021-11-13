@@ -93,38 +93,14 @@ services:
       - rabbitmq
       - postgres
     build: 
-      context: ./tg-bot
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: Dockerfile
     ports:
      - 80:8080
+     - 8000:8000
     networks:
       - default
     command: yarn start:prod
-
-  gh-actions-api:
-    environment: 
-      DATABASE_USER: ${DATABASE_USER:-user}
-      DATABASE_NAME: ${DATABASE_NAME:-gh_actions_db}
-      DATABASE_PASS: ${DATABASE_PASS:-user}
-      DATABASE_PORT: ${DATABASE_PORT:-5432}
-      DATABASE_HOST: ${DATABASE_HOST:-postgres_gh_actions}
-      RABBIT_HOST: ${RABBIT_HOST:-rabbitmq_gh_actions}
-      RABBIT_PORT: ${RABBIT_PORT:-5672}
-      PORT: 3000
-    container_name: gh_actions_api
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-    links:
-      - rabbitmq
-      - postgres
-    build: 
-      context: ./gh-actions
-      dockerfile: ./Dockerfile
-    ports:
-    - "3000:3000"
 
 networks: 
   default:

@@ -16,8 +16,8 @@
   },
   "scripts": {
     "start": "ts-node index.ts",
-    "migrations": "chmod +x ../database/run.sh && ../database/run.sh",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "migrations": "chmod +x database/run.sh && ../database/run.sh",
+    "format": "prettier --write \\\"../src/**/*.ts\\\"",
     "build": "tsc",
     "start:prod": "node ./dist/index.js"
   },
@@ -33,9 +33,12 @@
   "homepage": "https://github.com/kitt3911/github-unfollowers#readme",
   "dependencies": {
     "@prisma/client": "^2.19.0",
+    "@types/express": "^4.17.13",
     "amqplib": "^0.8.0",
     "datejs": "^1.0.0-rc3",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
     "js-hcl-parser": "^1.0.1",
     "moment": "^2.29.1",
     "momentjs": "^2.0.0",

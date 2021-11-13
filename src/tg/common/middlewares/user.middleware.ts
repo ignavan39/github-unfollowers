@@ -1,7 +1,7 @@
 import { getConnection } from 'typeorm';
 import { UserContext } from '../../types/ctx.type';
-import { UserDto } from '../../types/user.type';
-import logger from '../logger';
+import { UserDto } from '../../../types/user.type';
+import logger from '../../../common/logger';
 
 export const UserMiddleware = async (
   ctx: UserContext,
