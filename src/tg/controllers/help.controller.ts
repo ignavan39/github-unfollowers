@@ -1,12 +1,12 @@
 import { UserContext } from '../types/ctx.type';
 
 export class HelpController {
-  async start(ctx: UserContext): Promise<void> {
+  async start(ctx: UserContext): Promise<string> {
     try {
       const user = ctx.user;
-      ctx.reply(`Welcome ${user.name} 🐱`);
+      return `Welcome ${user.name ?? 'handsome'} 🐱`;
     } catch (e: any) {
-      ctx.reply(e);
+      return e.toString();
     }
   }
 }

@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "ts-node index.ts",
-    "migrations": "chmod +x database/run.sh && ../database/run.sh",
+    "migrations": "chmod +x ./database/run.sh && ./database/run.sh",
     "format": "prettier --write \\\"../src/**/*.ts\\\"",
     "build": "tsc",
     "start:prod": "node ./dist/index.js"

@@ -1,9 +1,8 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 CREATE TABLE IF NOT EXISTS users (
     id UUID NOT NULL DEFAULT uuid_generate_v4 (),
     name TEXT,
-    github_username TEXT NOT NULL,
+    github_username TEXT,
     telegram_id INT NOT NULL,
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
