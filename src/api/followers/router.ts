@@ -1,5 +1,6 @@
 import PromiseRouter from "express-promise-router";
 import {FollowerController} from "./controller";
+import logger from '../../common/logger';
 
 export class FollowerRouter {
     public readonly router;
@@ -8,10 +9,14 @@ export class FollowerRouter {
     constructor() {
         this.router = PromiseRouter();
         this.controller = new FollowerController();
-        this.initializeRoutes();
+        this.init();
     }
 
-    public initializeRoutes(){
+    public async init(){
         this.router.post('/followers',this.controller.getFollowers.bind(this))
+        logger.info({
+            level: 'info',
+            message: '[/internal/follower] POST method'
+        })
     }
 }

@@ -5,19 +5,19 @@ volumes:
   rabbitmq_data:
 
 services:
-  rabbitmq:
-    container_name: rabbitmq_gh_actions
-    image: rabbitmq:3-management-alpine
-    volumes:
-      - 'rabbitmq_data:/data'
-    ports: 
-      - '5672:5672'
-      - '15672:15672'
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
-      interval: 10s
-      timeout: 5s
-      retries: 3
+#  rabbitmq:
+#    container_name: rabbitmq_gh_actions
+#    image: rabbitmq:3-management-alpine
+#    volumes:
+#      - 'rabbitmq_data:/data'
+#    ports:
+#      - '5672:5672'
+#      - '15672:15672'
+#    healthcheck:
+#      test: rabbitmq-diagnostics -q ping
+#      interval: 10s
+#      timeout: 5s
+#      retries: 3
 
   postgres:
     container_name: postgres_gh_actions
@@ -85,12 +85,12 @@ services:
       RABBIT_PORT: ${RABBIT_PORT:-5672}
     container_name: gh_actions_tg_bot
     depends_on:
-      rabbitmq:
-        condition: service_healthy
+#      rabbitmq:
+#        condition: service_healthy
       postgres:
         condition: service_healthy
     links:
-      - rabbitmq
+#      - rabbitmq
       - postgres
     build: 
       context: .
@@ -101,6 +101,19 @@ services:
     networks:
       - default
     command: yarn start:prod
+
+  cron:
+    image: lecovi/curl-cron
+    links:
+      - gh-actions-bot
+    depends_on:
+      - gh-actions-bot
+    container_name: cron
+    networks:
+      - default
+    environment:
+      - URL=127.0.0.1:8000/internal/follower
+      - CRON_SCHEDULE="* 10 * * *"
 
 networks: 
   default:
