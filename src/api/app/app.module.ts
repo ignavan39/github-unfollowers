@@ -1,6 +1,7 @@
 import express, {Application} from "express";
 import {FollowerRouter} from "../followers/router";
 import logger from "../../common/logger";
+import { createOrmConnection } from '../../common/database';
 
 export class AppModule {
     private readonly followerRouter: FollowerRouter;
@@ -10,6 +11,7 @@ export class AppModule {
         this.followerRouter = new FollowerRouter();
         this.app = express();
         this.initRoutes();
+        createOrmConnection();
     }
 
     public initRoutes(){

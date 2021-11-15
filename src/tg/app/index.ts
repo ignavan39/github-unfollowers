@@ -6,6 +6,7 @@ import config from '../../common/config';
 import { createOrmConnection } from '../../common/database';
 import logger from '../../common/logger';
 import {wrapper} from "../wrapper";
+import { EventEmitter } from '../../common/event-emitter';
 
 export class TgModule {
   private telegramApi: Telegraf<UserContext>;
@@ -23,7 +24,9 @@ export class TgModule {
     this.telegramApi.use(UserMiddleware);
 
     this.telegramApi.hears('/start', wrapper(this.helpController.start.bind(this)));
-
+    EventEmitter.on('follower',(args) => {
+      this.telegramApi.telegram.sendMessage(args.telegramId,args.msg.toString())
+    })
     logger.info({
       level: 'info',
       message: 'TG Bot Initialization'
