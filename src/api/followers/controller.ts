@@ -9,7 +9,6 @@ export class FollowerController {
   constructor() {
   }
     public async getFollowers(req: Request,res: Response){
-    console.log('kek')
       const users: User[] = await getConnection().query('SELECT * FROM users WHERE github_username IS NOT NULL;');
       for(const user of users){
         let followerIds: number[] = [];
@@ -39,7 +38,7 @@ export class FollowerController {
                   message: JSON.stringify(differenceUsers),
                   events: this.getFollowers
                 })
-                EventEmitter.emit('follower',{telegramId: user.telegram_id,msg:JSON.stringify(differenceUsers)})
+                EventEmitter.emit('follower',{telegramId: user.telegram_id, message: differenceUsers})
               }
             }
           });

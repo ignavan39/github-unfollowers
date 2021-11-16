@@ -25,7 +25,7 @@ export class TgModule {
 
     this.telegramApi.hears('/start', wrapper(this.helpController.start.bind(this)));
     EventEmitter.on('follower',(args) => {
-      this.telegramApi.telegram.sendMessage(args.telegramId,args.msg.toString())
+      this.telegramApi.telegram.sendMessage(args.telegramId,args.message.toString())
     })
     logger.info({
       level: 'info',
