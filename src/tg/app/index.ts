@@ -24,6 +24,8 @@ export class TgModule {
     this.telegramApi.use(UserMiddleware);
 
     this.telegramApi.hears('/start', wrapper(this.helpController.start.bind(this)));
+    this.telegramApi.on('message',wrapper(this.helpController.setGithubUsername.bind(this)));
+
     EventEmitter.on('follower',(args) => {
       this.telegramApi.telegram.sendMessage(args.telegramId,args.message.toString())
     })
