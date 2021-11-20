@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { getConnection } from 'typeorm';
-import https from 'https';
 import logger from '../../libs/logger';
 import { EventEmitter } from '../../libs/event-emitter';
 import { Follower, User } from '../../libs/types/user.type';
+import { getGithubFollowers } from '../../libs/helpers';
 
 export class FollowersController {
   public async getFollowers(req: Request, res: Response) {
@@ -12,46 +12,31 @@ export class FollowersController {
     );
     for (const user of users) {
       let followerIds: number[] = [];
-      const options = {
-        host: 'api.github.com',
-        path: '/users/' + user.github_username + '/followers?per_page=1000',
-        method: 'GET',
-        headers: { 'user-agent': 'node.js' },
-      };
-      const request = https.request(options, (response) => {
-        let body = '';
-        response.on('data', (chunk) => {
-          body += chunk.toString('utf8');
-        });
 
-        response.on('end', async () => {
-          const followers = JSON.parse(body);
-          followerIds = followers.map((f: Follower) => f.id);
-          await getConnection().query(
-            `UPDATE users SET meta = '{"follower_ids":[${followerIds}]}' WHERE id = '${user.id}'`,
+      const followers = await getGithubFollowers(user.github_username);
+      followerIds = followers.map((f: Follower) => f.id);
+      await getConnection().query(
+        `UPDATE users SET meta = '{"follower_ids":[${followerIds}]}' WHERE id = '${user.id}'`,
+      );
+      if (user.meta.follower_ids.length) {
+        const difference: number[] = followerIds.filter(
+          (x: number) => !user.meta.follower_ids.includes(x),
+        );
+        if (difference.length) {
+          const differenceUsers = followers.find((f: Follower) =>
+            difference.includes(f.id),
           );
-          if (user.meta.follower_ids.length) {
-            const difference: number[] = followerIds.filter(
-              (x: number) => !user.meta.follower_ids.includes(x),
-            );
-            if (difference.length) {
-              const differenceUsers = followers.find((f: Follower) =>
-                difference.includes(f.id),
-              );
-              logger.info({
-                level: 'info',
-                message: JSON.stringify(differenceUsers),
-                events: this.getFollowers,
-              });
-              EventEmitter.emit('follower', {
-                telegramId: user.telegram_id,
-                message: differenceUsers,
-              });
-            }
-          }
-        });
-      });
-      request.end();
+          logger.info({
+            level: 'info',
+            message: JSON.stringify(differenceUsers),
+            events: this.getFollowers,
+          });
+          EventEmitter.emit('follower', {
+            telegramId: user.telegram_id,
+            message: JSON.stringify(differenceUsers, null, 2),
+          });
+        }
+      }
     }
     return res.status(200).json('OK');
   }
