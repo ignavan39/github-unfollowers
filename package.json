@@ -7,9 +7,12 @@
     "@types/amqplib": "^0.8.2",
     "@types/datejs": "0.0.31",
     "@types/node": "14.14.37",
-    "@typescript-eslint/eslint-plugin": "4.32.0",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "4.32.0",
-    "prettier": "2.4.1",
+    "eslint": "^8.2.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.4.1",
     "prisma": "2.20.1",
     "ts-node": "9.1.1",
     "typescript": "4.2.4"
@@ -17,7 +20,8 @@
   "scripts": {
     "start": "ts-node index.ts",
     "migrations": "chmod +x ./database/run.sh && ./database/run.sh",
-    "format": "prettier --write \\\"../src/**/*.ts\\\"",
+    "format": "prettier --write \"./src/**/*.ts\"",
+    "lint": "eslint \"./src/**/*.ts\"",
     "build": "tsc",
     "start:prod": "node ./dist/index.js"
   },

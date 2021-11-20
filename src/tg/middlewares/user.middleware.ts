@@ -1,7 +1,7 @@
 import { getConnection } from 'typeorm';
 import { UserContext } from '../types/ctx.type';
-import { UserDto } from '../../types/user.type';
 import logger from '../../libs/logger';
+import { UserDto } from '../../libs/types/user.type';
 
 export const UserMiddleware = async (
   ctx: UserContext,
@@ -26,14 +26,14 @@ export const UserMiddleware = async (
       args.push(dto.name ?? '');
     }
 
-    let user = (
-        await getConnection().query(
-          `INSERT INTO users("telegram_id" ,"name") VALUES ($1,$2)
+    const user = (
+      await getConnection().query(
+        `INSERT INTO users("telegram_id" ,"name") VALUES ($1,$2)
              ON CONFLICT (telegram_id) DO UPDATE SET name = $2
              RETURNING *;`,
-          args,
-        )
-      )[0];
+        args,
+      )
+    )[0];
 
     ctx.user = user;
     return next();

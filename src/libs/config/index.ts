@@ -11,7 +11,7 @@ export type DatabaseConfig = {
 export type RabbitMQConfig = {
   port: number;
   host: string;
-}
+};
 
 export type Config = {
   botToken: string;
@@ -35,8 +35,8 @@ export class ConfigService {
       },
       rabbitmq: {
         host: this.getEnvironmentValueByKey('RABBIT_HOST'),
-        port: Number.parseInt(this.getEnvironmentValueByKey('RABBIT_PORT'))
-      }
+        port: Number.parseInt(this.getEnvironmentValueByKey('RABBIT_PORT')),
+      },
     };
   }
 
@@ -45,8 +45,8 @@ export class ConfigService {
     if (!value) {
       logger.error({
         level: 'error',
-        message: 'Invalid environment key'
-      })
+        message: 'Invalid environment key',
+      });
       throw new Error(`Invalid environment ${key}`);
     }
 

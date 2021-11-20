@@ -1,7 +1,6 @@
-import { UserContext } from '../types/ctx.type';
 import logger from '../../libs/logger';
 import { getConnection } from 'typeorm';
-import { User } from '../../types/user.type';
+import { User } from '../../libs/types/user.type';
 
 export class HelpController {
   async start(user: User): Promise<string> {
@@ -12,24 +11,30 @@ export class HelpController {
         level: 'error',
         message: e,
         event: this.start,
-      })
+      });
       throw e;
     }
   }
 
-  async setGithubUsername(user: User, githubUsername: string | undefined) : Promise<string> {
+  async setGithubUsername(
+    user: User,
+    githubUsername: string | undefined,
+  ): Promise<string> {
     try {
-        if(!githubUsername){
-          return 'Empty username :(';
-        }
-        await getConnection().query(`UPDATE users SET github_username = $1 WHERE telegram_id = $2`,[githubUsername,user.telegram_id]);
-        return `Hello ${githubUsername} !`;
+      if (!githubUsername) {
+        return 'Empty username :(';
+      }
+      await getConnection().query(
+        `UPDATE users SET github_username = $1 WHERE telegram_id = $2`,
+        [githubUsername, user.telegram_id],
+      );
+      return `Hello ${githubUsername} !`;
     } catch (e) {
       logger.error({
         level: 'error',
         message: e,
         event: this.setGithubUsername,
-      })
+      });
       throw e;
     }
   }

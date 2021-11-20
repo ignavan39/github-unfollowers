@@ -27,7 +27,7 @@ export type User = {
   created_at: Date;
   updated_at: Date;
   meta: {
-    follower_ids: [],
+    follower_ids: number[];
   };
 };
 

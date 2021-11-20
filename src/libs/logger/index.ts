@@ -11,14 +11,14 @@ const logger = winston.createLogger({
     data: 6,
     help: 7,
     warn: 8,
-    error: 9
+    error: 9,
   },
   format: format.combine(
     format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss'
+      format: 'YYYY-MM-DD HH:mm:ss',
     }),
-    format.json()
-),
-  transports: [new transports.Console()]
+    format.json(),
+  ),
+  transports: [new transports.Console()],
 });
 export default logger;
