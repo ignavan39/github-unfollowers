@@ -4,3 +4,5 @@
 /node_modules
 /tg-bot/node_modules
 /tg-bot/dist
+/dist
+/.idea
