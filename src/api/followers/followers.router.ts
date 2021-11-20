@@ -1,14 +1,14 @@
 import PromiseRouter from "express-promise-router";
-import {FollowerController} from "./controller";
-import logger from '../../common/logger';
+import logger from "../../libs/logger";
+import {FollowersController} from "./followers.controller";
 
-export class FollowerRouter {
+export class FollowersRouter {
     public readonly router;
     private readonly controller;
 
     constructor() {
         this.router = PromiseRouter();
-        this.controller = new FollowerController();
+        this.controller = new FollowersController();
         this.init();
     }
 

@@ -71,6 +71,11 @@ services:
         limits:
           cpus: '1'
           memory: 4G
+    networks:
+      gh:
+        ipv4_address: 172.4.4.11
+        aliases:
+          - postgres.gh.loc
 
   gh-actions-bot:
     environment: 
@@ -80,7 +85,7 @@ services:
       DATABASE_PASS: ${DATABASE_PASS:-user}
       DATABASE_PORT: ${DATABASE_PORT:-5432}
       BOT_TOKEN: ${BOT_TOKEN}
-      DATABASE_HOST: ${DATABASE_HOST:-postgres_gh_actions}
+      DATABASE_HOST: postgres.gh.loc
       RABBIT_HOST: ${RABBIT_HOST:-rabbitmq_gh_actions}
       RABBIT_PORT: ${RABBIT_PORT:-5672}
     container_name: gh_actions_tg_bot
@@ -99,23 +104,30 @@ services:
      - 80:8080
      - 8000:8000
     networks:
-      - default
+      gh:
+        ipv4_address: 172.4.4.12
+        aliases:
+          - bot.gh.loc
     command: yarn start:prod
 
   cron:
-    image: lecovi/curl-cron
+    build: 
+      dockerfile: Dockerfile.cron
+      context: ./cron
     links:
       - gh-actions-bot
     depends_on:
       - gh-actions-bot
     container_name: cron
     networks:
-      - default
-    environment:
-      - URL=127.0.0.1:8000/internal/follower
-      - CRON_SCHEDULE="* 10 * * *"
+      gh:
+        ipv4_address: 172.4.4.7
+        aliases:
+          - cron.gh.loc
 
-networks: 
-  default:
-    name: gh-actions
-    driver: bridge
+networks:
+  gh:
+    name: gh
+    ipam:
+      config:
+        - subnet: "172.4.4.0/24"

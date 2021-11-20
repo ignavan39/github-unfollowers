@@ -1,21 +1,21 @@
 import express, {Application} from "express";
-import {FollowerRouter} from "../followers/router";
-import logger from "../../common/logger";
-import { createOrmConnection } from '../../common/database';
+import { createOrmConnection } from "../../libs/database";
+import logger from "../../libs/logger";
+import {FollowersRouter} from "../followers/followers.router";
 
 export class AppModule {
-    private readonly followerRouter: FollowerRouter;
+    private readonly followersRouter: FollowersRouter;
     private readonly app: Application
 
     constructor() {
-        this.followerRouter = new FollowerRouter();
+        this.followersRouter = new FollowersRouter();
         this.app = express();
         this.initRoutes();
         createOrmConnection();
     }
 
     public initRoutes(){
-        this.app.use('/internal',this.followerRouter.router);
+        this.app.use('/internal',this.followersRouter.router);
     }
 
     public async listen(): Promise<void>{

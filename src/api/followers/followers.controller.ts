@@ -1,20 +1,20 @@
 import {Request, Response} from "express";
-import { EventEmitter } from '../../common/event-emitter';
 import { Follower, User } from '../../types/user.type';
 import { getConnection } from 'typeorm';
 import https from 'https';
-import logger from '../../common/logger';
+import logger from "../../libs/logger";
+import { EventEmitter } from "../../libs/event-emitter";
 
-export class FollowerController {
-  constructor() {
-  }
+export class FollowersController {
+  
     public async getFollowers(req: Request,res: Response){
       const users: User[] = await getConnection().query('SELECT * FROM users WHERE github_username IS NOT NULL;');
       for(const user of users){
+        console.log(user)
         let followerIds: number[] = [];
         const options =  {
           host: 'api.github.com',
-          path: '/users/' + user.github_username + '/followers?per_page=10000',
+          path: '/users/' + user.github_username + '/followers?per_page=1000',
           method: 'GET',
           headers: {'user-agent': 'node.js'}
         };
