@@ -20,7 +20,7 @@ export const getGithubFollowers = async (
     method: 'GET',
     headers: { 'user-agent': 'node.js' },
   };
-  const followers: Follower[] = await request<Follower>(options);
+  const followers: Follower[] = await request<Follower[]>(options);
   let hasNextPage = followers.length >= 100;
   while (hasNextPage) {
     perPage += 100;
@@ -31,18 +31,33 @@ export const getGithubFollowers = async (
       `/followers?per_page=${perPage}&page=${page}`;
     options.url = url;
 
-    const nextFollowers = await request<Follower>(options);
+    const nextFollowers = await request<Follower[]>(options);
     followers.push(...nextFollowers);
     hasNextPage = nextFollowers.length >= 100;
   }
   return followers;
 };
 
-async function request<T>(options: HttpOptions): Promise<T[]> {
+export async function getGithubUserInfo(username: string): Promise<Follower> {
+  const url = 'https://api.github.com/users/' + username;
+  const options: HttpOptions = {
+    url,
+    method: 'GET',
+    headers: { 'user-agent': 'node.js' },
+  };
+  try {
+    const userInfo: Follower = await request<Follower>(options);
+    return userInfo;
+  } catch {
+    throw Error('not found');
+  }
+}
+
+async function request<T>(options: HttpOptions): Promise<T> {
   const res = await axios.get(options.url, {
     method: options.method,
     headers: options.headers,
   });
-  const result: T[] = res.data;
+  const result: T = res.data;
   return result;
 }

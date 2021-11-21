@@ -1,6 +1,7 @@
 import logger from '../../libs/logger';
 import { getConnection } from 'typeorm';
 import { User } from '../../libs/types/user.type';
+import { getGithubUserInfo } from '../../libs/helpers';
 
 export class HelpController {
   async start(user: User): Promise<string> {
@@ -21,14 +22,23 @@ export class HelpController {
     githubUsername: string | undefined,
   ): Promise<string> {
     try {
-      if (!githubUsername) {
+      if (!githubUsername || githubUsername.length < 1) {
         return 'Empty username :(';
       }
       await getConnection().query(
         `UPDATE users SET github_username = $1 WHERE telegram_id = $2`,
         [githubUsername, user.telegram_id],
       );
-      return `Hello ${githubUsername} !`;
+      try {
+        const userInfo = await getGithubUserInfo(githubUsername);
+        return `You are subscribed to GitHub account notifications: ${JSON.stringify(
+          userInfo,
+          null,
+          2,
+        )}`;
+      } catch {
+        return `User not found by ${githubUsername}`;
+      }
     } catch (e) {
       logger.error({
         level: 'error',
