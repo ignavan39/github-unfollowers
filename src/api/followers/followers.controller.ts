@@ -9,7 +9,6 @@ export class FollowersController {
   private githubApiService: GitHubApiService;
   constructor() {
     this.githubApiService = new GitHubApiService();
-    console.log(this.githubApiService)
   }
 
   public async getFollowers(req: Request, res: Response) {
