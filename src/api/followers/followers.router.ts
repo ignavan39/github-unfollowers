@@ -13,7 +13,10 @@ export class FollowersRouter {
   }
 
   public async init() {
-    this.router.post('/followers', this.controller.getFollowers.bind(this));
+    this.router.post(
+      '/followers',
+      this.controller.getFollowers.bind(this.controller),
+    );
     logger.info({
       level: 'info',
       message: '[/internal/follower] POST method',

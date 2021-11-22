@@ -1,4 +1,8 @@
-export type Follower = {
+export interface Follower {
+  id: number;
+}
+
+export interface GithubFollower extends Follower {
   login: string;
   id: number;
   node_id: string;
@@ -17,7 +21,7 @@ export type Follower = {
   received_events_url: string;
   type: string;
   site_admin: boolean;
-};
+}
 
 export type User = {
   id: string;
