@@ -3,9 +3,15 @@ import { getConnection } from 'typeorm';
 import logger from '../../libs/logger';
 import { EventEmitter } from '../../libs/event-emitter';
 import { Follower, User } from '../../libs/types/user.type';
-import { getGithubFollowers } from '../../libs/helpers';
+import { GitHubApiService } from './github-api.service';
 
 export class FollowersController {
+  private githubApiService: GitHubApiService;
+  constructor() {
+    this.githubApiService = new GitHubApiService();
+    console.log(this.githubApiService)
+  }
+
   public async getFollowers(req: Request, res: Response) {
     const users: User[] = await getConnection().query(
       'SELECT * FROM users WHERE github_username IS NOT NULL;',
@@ -13,7 +19,9 @@ export class FollowersController {
     for (const user of users) {
       let followerIds: number[] = [];
 
-      const followers = await getGithubFollowers(user.github_username);
+      const followers = await this.githubApiService.getFollowers(
+        user.github_username,
+      );
       followerIds = followers.map((f: Follower) => f.id);
       await getConnection().query(
         `UPDATE users SET meta = '{"follower_ids":[${followerIds}]}' WHERE id = '${user.id}'`,

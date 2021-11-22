@@ -1,9 +1,13 @@
 import logger from '../../libs/logger';
 import { getConnection } from 'typeorm';
 import { User } from '../../libs/types/user.type';
-import { getGithubUserInfo } from '../../libs/helpers';
+import { GitHubApiService } from '../../api/followers/github-api.service';
 
 export class HelpController {
+  private readonly githubApiService: GitHubApiService;
+  constructor() {
+    this.githubApiService = new GitHubApiService();
+  }
   async start(user: User): Promise<string> {
     try {
       return `Welcome ${user.name ?? 'handsome'} 🐱`;
@@ -30,7 +34,9 @@ export class HelpController {
         [githubUsername, user.telegram_id],
       );
       try {
-        const userInfo = await getGithubUserInfo(githubUsername);
+        const userInfo = await this.githubApiService.getUserInfo(
+          githubUsername,
+        );
         return `You are subscribed to GitHub account notifications: ${JSON.stringify(
           userInfo,
           null,
