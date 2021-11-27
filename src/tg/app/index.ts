@@ -3,7 +3,6 @@ import { UserMiddleware } from '../middlewares/user.middleware';
 import { HelpController } from '../controllers/help.controller';
 import { UserContext } from '../types/ctx.type';
 import config from '../../libs/config';
-import { createOrmConnection } from '../../libs/database';
 import logger from '../../libs/logger';
 import { wrapper } from '../wrapper';
 import { EventEmitter } from '../../libs/event-emitter';
@@ -18,8 +17,6 @@ export class TgModule {
   }
 
   public async init(): Promise<void> {
-    await createOrmConnection();
-
     this.telegramApi.use(UserMiddleware);
 
     this.telegramApi.hears(
@@ -31,9 +28,12 @@ export class TgModule {
       wrapper(this.helpController.setGithubUsername.bind(this)),
     );
 
-    EventEmitter.on('follower', (args) => {
-      this.telegramApi.telegram.sendMessage(args.telegramId, args.message);
-    });
+    EventEmitter.on(
+      'follower',
+      (args: { telegramId: number; payload: string }) => {
+        this.telegramApi.telegram.sendMessage(args.telegramId, args.payload);
+      },
+    );
     logger.info({
       level: 'info',
       message: 'TG Bot Initialization',
