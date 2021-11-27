@@ -1,7 +1,6 @@
 import { TgModule } from './tg/app';
 import { AppModule as ApiModule } from './api/app/app.module';
 import { createOrmConnection } from './libs/database';
-import logger from '../dist/common/logger';
 
 try {
   (async () => {
