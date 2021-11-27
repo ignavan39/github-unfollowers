@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import { getConnection } from 'typeorm';
-import logger from '../../libs/logger';
 import { EventEmitter } from '../../libs/event-emitter';
 import { Follower, User } from '../../libs/types/user.type';
 import { GitHubApiService } from './github-api.service';
+import { ApiService } from '../api-service.interface';
 
 export class FollowersController {
-  private githubApiService: GitHubApiService;
+  private apiService: ApiService;
   constructor() {
-    this.githubApiService = new GitHubApiService();
+    this.apiService = new GitHubApiService();
   }
 
   public async getFollowers(req: Request, res: Response) {
@@ -18,7 +18,7 @@ export class FollowersController {
     for (const user of users) {
       let followerIds: number[] = [];
 
-      const followers = await this.githubApiService.getFollowers(
+      const followers = await this.apiService.getFollowers(
         user.github_username,
       );
       followerIds = followers.map((f: Follower) => f.id);
@@ -33,14 +33,9 @@ export class FollowersController {
           const differenceUsers = followers.find((f: Follower) =>
             difference.includes(f.id),
           );
-          logger.info({
-            level: 'info',
-            message: JSON.stringify(differenceUsers),
-            events: this.getFollowers,
-          });
           EventEmitter.emit('follower', {
             telegramId: user.telegram_id,
-            message: JSON.stringify(differenceUsers, null, 2),
+            payload: JSON.stringify(differenceUsers, null, 2),
           });
         }
       }

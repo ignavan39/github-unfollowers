@@ -1,5 +1,4 @@
 import express, { Application } from 'express';
-import { createOrmConnection } from '../../libs/database';
 import logger from '../../libs/logger';
 import { FollowersRouter } from '../followers/followers.router';
 
@@ -11,7 +10,6 @@ export class AppModule {
     this.followersRouter = new FollowersRouter();
     this.app = express();
     this.initRoutes();
-    createOrmConnection();
   }
 
   public initRoutes() {
